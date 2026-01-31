@@ -1,0 +1,61 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  
+  body {
+    @apply bg-background text-text-primary font-sans;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  code {
+    @apply font-mono;
+  }
+}
+
+@layer components {
+  /* Glassmorphism effect */
+  .glass {
+    @apply bg-surface/80 backdrop-blur-glass border border-border;
+  }
+  
+  /* Neon glow effect */
+  .glow-accent {
+    @apply shadow-glow transition-shadow duration-200;
+  }
+  
+  /* Scrollbar styling */
+  .custom-scrollbar::-webkit-scrollbar {
+    @apply w-2 h-2;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-track {
+    @apply bg-surface;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    @apply bg-muted rounded-full hover:bg-accent transition-colors;
+  }
+}
+
+@layer utilities {
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-accent to-accent-purple;
+  }
+  
+  /* Window dragging */
+  .draggable {
+    -webkit-app-region: drag;
+    app-region: drag;
+  }
+  
+  .non-draggable {
+    -webkit-app-region: no-drag;
+    app-region: no-drag;
+  }
+}
