@@ -31,6 +31,14 @@ export const IPC_CHANNELS = {
   NETWORK_CHECK_STATUS: 'network:checkStatus',
   NETWORK_STATUS_CHANGED: 'network:statusChanged',
 
+  // Automation
+  AUTOMATION_GET_SCRIPTS: 'automation:getScripts',
+  AUTOMATION_CREATE_SCRIPT: 'automation:createScript',
+  AUTOMATION_UPDATE_SCRIPT: 'automation:updateScript',
+  AUTOMATION_DELETE_SCRIPT: 'automation:deleteScript',
+  AUTOMATION_EXECUTE_SCRIPT: 'automation:executeScript',
+  AUTOMATION_GET_HISTORY: 'automation:getHistory',
+
   // App
   APP_GET_VERSION: 'app:getVersion',
   APP_QUIT: 'app:quit',

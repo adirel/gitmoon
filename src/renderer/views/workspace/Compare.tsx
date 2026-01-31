@@ -151,13 +151,13 @@ export const Compare: React.FC<CompareProps> = ({ repository }) => {
     <div className="h-full overflow-y-auto custom-scrollbar">
       <div className="p-6 space-y-6">
         {/* Header */}
-        <div className="glass p-4 rounded-lg">
+        <div className="glass p-4 rounded-lg relative z-30">
           <h2 className="text-lg font-semibold mb-4">Compare Branches</h2>
           
           {/* Branch Selector */}
           <div className="flex items-center space-x-3">
             {/* Base Branch */}
-            <div className="flex-1 relative">
+            <div className="flex-1 relative z-20">
               <label className="text-xs text-muted mb-1 block">Base Branch</label>
               <button
                 onClick={() => setShowBaseDropdown(!showBaseDropdown)}
@@ -197,7 +197,7 @@ export const Compare: React.FC<CompareProps> = ({ repository }) => {
             <ArrowRight className="w-5 h-5 text-accent flex-shrink-0 mt-5" />
 
             {/* Compare Branch */}
-            <div className="flex-1 relative">
+            <div className="flex-1 relative z-20">
               <label className="text-xs text-muted mb-1 block">Compare Branch</label>
               <button
                 onClick={() => setShowCompareDropdown(!showCompareDropdown)}

@@ -3,6 +3,7 @@ import { IPC_CHANNELS } from '../../../shared/ipc-channels';
 import { setupGitHandlers } from './git';
 import { setupRepositoryHandlers } from './repository';
 import { setupNetworkHandlers } from './network';
+import { setupAutomationHandlers } from './automation';
 import path from 'path';
 import fs from 'fs';
 import { exec } from 'child_process';
@@ -14,6 +15,7 @@ export function setupIpcHandlers(): void {
   setupGitHandlers();
   setupRepositoryHandlers();
   setupNetworkHandlers();
+  setupAutomationHandlers();
 
   // App version
   ipcMain.handle(IPC_CHANNELS.APP_GET_VERSION, () => {

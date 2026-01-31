@@ -1,5 +1,5 @@
 import React from 'react';
-import { Home, Clock, Star, Settings, FolderGit2, GitBranch, GitCommit, FileText, GitCompare, Network, ChevronLeft } from 'lucide-react';
+import { Home, Clock, Star, Settings, FolderGit2, GitBranch, GitCommit, FileText, GitCompare, Network, Zap, ChevronLeft } from 'lucide-react';
 import { useRepositoryStore } from '../stores/repository';
 import { useAppStore } from '../stores/app';
 import { cn } from '../utils/cn';
@@ -25,6 +25,7 @@ export const Sidebar: React.FC = () => {
     { icon: FileText, label: 'Changes', id: 'changes' },
     { icon: GitCompare, label: 'Compare', id: 'compare' },
     { icon: Network, label: 'Graph', id: 'graph' },
+    { icon: Zap, label: 'Automation', id: 'automation' },
   ];
 
   const items = selectedRepo ? workspaceItems : managementItems;

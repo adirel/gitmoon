@@ -64,36 +64,94 @@ export const Graph: React.FC<GraphProps> = ({ repository }) => {
   };
 
   const processCommitsForGraph = (rawCommits: Commit[]): CommitNode[] => {
-    // Simple lane assignment algorithm
-    const commitMap = new Map<string, CommitNode>();
-    const lanes: string[][] = [];
+    if (rawCommits.length === 0) return [];
     
+    const commitMap = new Map<string, CommitNode>();
+    const commitToLane = new Map<string, number>();
+    const childCount = new Map<string, number>(); // Track how many children each commit has
+    const activeLanes: Set<number> = new Set(); // Track which lanes are in use
+    
+    // Initialize nodes (preserve visual order - newest at top)
     rawCommits.forEach((commit, index) => {
-      // Find available lane
-      let lane = 0;
-      for (let i = 0; i < lanes.length; i++) {
-        if (!lanes[i].includes(commit.sha)) {
-          lane = i;
-          break;
+      const node: CommitNode = {
+        ...commit,
+        x: 0,
+        y: index * 80,
+        lane: 0,
+        branches: [],
+      };
+      commitMap.set(commit.sha, node);
+    });
+    
+    // Count children for each commit
+    rawCommits.forEach(commit => {
+      if (commit.parents) {
+        commit.parents.forEach(parentSha => {
+          childCount.set(parentSha, (childCount.get(parentSha) || 0) + 1);
+        });
+      }
+    });
+    
+    // Process commits in REVERSE order (oldest first) so parents get lanes before children
+    const reversed = [...rawCommits].reverse();
+    
+    reversed.forEach((commit) => {
+      const node = commitMap.get(commit.sha)!;
+      let lane = -1;
+      
+      // If this commit has children, try to use the lane of its first child
+      const firstChild = rawCommits.find(c => 
+        c.parents && c.parents[0] === commit.sha
+      );
+      
+      if (firstChild && commitToLane.has(firstChild.sha)) {
+        // Continue in child's lane (we're the parent, child continues our line)
+        lane = commitToLane.get(firstChild.sha)!;
+      } else if (commit.parents && commit.parents.length > 0) {
+        // This is a new branch point or merge
+        const firstParentSha = commit.parents[0];
+        
+        // If parent has a lane and we're not their main child, get a new lane
+        if (commitToLane.has(firstParentSha)) {
+          const parentLane = commitToLane.get(firstParentSha)!;
+          
+          // Check if parent's main child is already using that lane
+          const parentMainChild = rawCommits.find(c =>
+            c.parents && c.parents[0] === firstParentSha
+          );
+          
+          if (parentMainChild && commitToLane.has(parentMainChild.sha)) {
+            // Parent's main line is taken, we're a branch - get new lane
+            lane = 0;
+            while (activeLanes.has(lane)) lane++;
+          } else {
+            // We are the main child, use parent's lane
+            lane = parentLane;
+          }
         }
       }
       
-      // If no available lane, create new one
-      if (lane === lanes.length) {
-        lanes.push([]);
+      // If still no lane, find first available
+      if (lane === -1) {
+        lane = 0;
+        while (activeLanes.has(lane)) lane++;
       }
       
-      lanes[lane].push(commit.sha);
+      // Assign lane
+      node.lane = lane;
+      node.x = lane * 40;
+      commitToLane.set(commit.sha, lane);
+      activeLanes.add(lane);
       
-      const node: CommitNode = {
-        ...commit,
-        x: lane * 40,
-        y: index * 80,
-        lane,
-        branches: [],
-      };
+      // Free lane if this commit has no more children to process
+      const children = rawCommits.filter(c => 
+        c.parents && c.parents.includes(commit.sha)
+      );
       
-      commitMap.set(commit.sha, node);
+      if (children.length === 0 || children.every(c => commitToLane.has(c.sha))) {
+        // All children processed, can free the lane
+        activeLanes.delete(lane);
+      }
     });
 
     // Assign branches to commits
@@ -162,10 +220,10 @@ export const Graph: React.FC<GraphProps> = ({ repository }) => {
   return (
     <div className="h-full flex flex-col">
       {/* Header Controls */}
-      <div className="p-4 glass border-b border-border">
+      <div className="p-4 glass border-b border-border relative z-30">
         <div className="flex items-center space-x-3">
           {/* Branch Filter */}
-          <div className="relative flex-shrink-0">
+          <div className="relative flex-shrink-0 z-20">
             <button
               onClick={() => setShowBranchDropdown(!showBranchDropdown)}
               className="flex items-center space-x-2 px-3 py-2 bg-surface hover:bg-surface-elevated rounded border border-border transition-colors"
@@ -275,36 +333,97 @@ export const Graph: React.FC<GraphProps> = ({ repository }) => {
           </div>
         ) : (
           <div className="relative p-6" style={{ minHeight: `${filteredCommits.length * 80 + 100}px` }}>
-            {/* Graph Lines SVG */}
+            {/* Background Lane Lines */}
             <svg
               className="absolute top-0 left-0 w-full h-full pointer-events-none"
               style={{ zIndex: 0 }}
             >
-              {filteredCommits.map((commit, index) => {
-                if (index === filteredCommits.length - 1) return null;
+              {/* Draw vertical lane guides */}
+              {Array.from({ length: Math.max(...filteredCommits.map(c => c.lane)) + 1 }).map((_, laneIndex) => (
+                <line
+                  key={`lane-${laneIndex}`}
+                  x1={30 + laneIndex * 40}
+                  y1={0}
+                  x2={30 + laneIndex * 40}
+                  y2="100%"
+                  stroke="rgba(100, 116, 139, 0.1)"
+                  strokeWidth="1"
+                  strokeDasharray="4 4"
+                />
+              ))}
+            </svg>
+            
+            {/* Graph Lines SVG */}
+            <svg
+              className="absolute top-0 left-0 w-full h-full pointer-events-none"
+              style={{ zIndex: 1 }}
+            >
+              <defs>
+                {/* Define gradients for different branch colors */}
+                <linearGradient id="line-gradient-accent" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stopColor="rgb(0, 212, 255)" stopOpacity="0.8" />
+                  <stop offset="100%" stopColor="rgb(0, 212, 255)" stopOpacity="0.4" />
+                </linearGradient>
+              </defs>
+              
+              {filteredCommits.flatMap((commit) => {
+                if (!commit.parents || commit.parents.length === 0) return [];
                 
-                const nextCommit = filteredCommits[index + 1];
-                const x1 = 30 + commit.x;
-                const y1 = 24 + commit.y + 24;
-                const x2 = 30 + nextCommit.x;
-                const y2 = 24 + nextCommit.y + 24;
-
-                return (
-                  <line
-                    key={commit.sha}
-                    x1={x1}
-                    y1={y1}
-                    x2={x2}
-                    y2={y2}
-                    stroke="rgba(100, 116, 139, 0.3)"
-                    strokeWidth="2"
-                  />
-                );
+                return commit.parents.map((parentSha, pIndex) => {
+                  const parentCommit = filteredCommits.find(c => c.sha === parentSha);
+                  if (!parentCommit) return null;
+                  
+                  const x1 = 30 + commit.x;
+                  const y1 = 30 + commit.y;
+                  const x2 = 30 + parentCommit.x;
+                  const y2 = 30 + parentCommit.y;
+                  
+                  // Use branch color or default
+                  const color = commit.branches.length > 0 
+                    ? getBranchColor(commit.branches[0])
+                    : 'rgb(100, 116, 139)';
+                  
+                  // If lanes are different, draw a curved line (merge/branch)
+                  if (commit.lane !== parentCommit.lane) {
+                    // Curved line for merges
+                    const midY = (y1 + y2) / 2;
+                    const controlX1 = x1;
+                    const controlX2 = x2;
+                    
+                    return (
+                      <g key={`${commit.sha}-${parentSha}-${pIndex}`}>
+                        <path
+                          d={`M ${x1},${y1} C ${controlX1},${midY} ${controlX2},${midY} ${x2},${y2}`}
+                          stroke={color}
+                          strokeWidth="3"
+                          fill="none"
+                          strokeOpacity="0.7"
+                          strokeLinecap="round"
+                        />
+                      </g>
+                    );
+                  } else {
+                    // Straight line for same lane
+                    return (
+                      <line
+                        key={`${commit.sha}-${parentSha}-${pIndex}`}
+                        x1={x1}
+                        y1={y1}
+                        x2={x2}
+                        y2={y2}
+                        stroke={color}
+                        strokeWidth="3"
+                        strokeOpacity="0.7"
+                        strokeLinecap="round"
+                      />
+                    );
+                  }
+                }).filter(Boolean);
               })}
             </svg>
 
             {/* Commit Nodes */}
-            <div className="relative" style={{ zIndex: 1 }}>
+            <div className="relative" style={{ zIndex: 2 }}>
               {filteredCommits.map((commit) => (
                 <div
                   key={commit.sha}

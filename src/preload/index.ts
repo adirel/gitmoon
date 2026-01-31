@@ -9,6 +9,10 @@ import type {
   ConnectionStatus,
   Result,
 } from '../shared/types/git';
+import type {
+  AutomationScript,
+  AutomationExecution,
+} from '../shared/types/automation';
 
 // Expose protected methods that allow the renderer process to use
 // ipcRenderer without exposing the entire object
@@ -99,6 +103,27 @@ const api = {
     onStatusChanged: (callback: (status: ConnectionStatus) => void) => {
       ipcRenderer.on(IPC_CHANNELS.NETWORK_STATUS_CHANGED, (_, status) => callback(status));
     },
+  },
+
+  // Automation operations
+  automation: {
+    getScripts: (repositoryId: string): Promise<Result<AutomationScript[]>> =>
+      ipcRenderer.invoke(IPC_CHANNELS.AUTOMATION_GET_SCRIPTS, repositoryId),
+    
+    createScript: (script: AutomationScript): Promise<Result<AutomationScript>> =>
+      ipcRenderer.invoke(IPC_CHANNELS.AUTOMATION_CREATE_SCRIPT, script),
+    
+    updateScript: (script: AutomationScript): Promise<Result<AutomationScript>> =>
+      ipcRenderer.invoke(IPC_CHANNELS.AUTOMATION_UPDATE_SCRIPT, script),
+    
+    deleteScript: (scriptId: string): Promise<Result<void>> =>
+      ipcRenderer.invoke(IPC_CHANNELS.AUTOMATION_DELETE_SCRIPT, scriptId),
+    
+    executeScript: (scriptId: string, repoPath: string): Promise<Result<AutomationExecution>> =>
+      ipcRenderer.invoke(IPC_CHANNELS.AUTOMATION_EXECUTE_SCRIPT, scriptId, repoPath),
+    
+    getHistory: (scriptId: string): Promise<Result<AutomationExecution[]>> =>
+      ipcRenderer.invoke(IPC_CHANNELS.AUTOMATION_GET_HISTORY, scriptId),
   },
 
   // App operations

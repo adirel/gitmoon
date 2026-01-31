@@ -7,9 +7,10 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "dev": "npm run build:main && concurrently \"npm run dev:renderer\" \"npm run dev:electron\"",
+    "dev": "npm run build:main && concurrently -k \"npm run dev:renderer\" \"npm run dev:electron:wait\"",
     "dev:renderer": "vite",
-    "dev:electron": "electron .",
+    "dev:electron": "set NODE_ENV=development&& electron .",
+    "dev:electron:wait": "node -e \"setTimeout(() => process.exit(0), 3000)\" && npm run dev:electron",
     "dev:main": "tsc -p tsconfig.main.json && node esbuild.preload.mjs",
     "build": "npm run build:renderer && npm run build:main",
     "build:renderer": "vite build",

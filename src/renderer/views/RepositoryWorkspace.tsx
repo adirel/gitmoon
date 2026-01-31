@@ -8,6 +8,7 @@ import { Commits } from './workspace/Commits';
 import { Changes } from './workspace/Changes';
 import { Compare } from './workspace/Compare';
 import { Graph } from './workspace/Graph';
+import { Automation } from './workspace/Automation';
 import type { Branch } from '@shared/types/git';
 
 export const RepositoryWorkspace: React.FC = () => {
@@ -44,6 +45,8 @@ export const RepositoryWorkspace: React.FC = () => {
         return <Compare repository={selectedRepo} />;
       case 'graph':
         return <Graph repository={selectedRepo} />;
+      case 'automation':
+        return <Automation repository={selectedRepo} />;
       default:
         return <Overview repository={selectedRepo} />;
     }
