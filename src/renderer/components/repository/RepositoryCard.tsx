@@ -97,7 +97,8 @@ export const RepositoryCard: React.FC<RepositoryCardProps> = ({ repository }) =>
       onClick={() => selectRepository(repository.id)}
       className={cn(
         "glass p-4 rounded-lg hover:border-accent cursor-pointer transition-all duration-200 hover:shadow-glow group relative",
-        isLoading && "opacity-50 pointer-events-none"
+        isLoading && "opacity-50 pointer-events-none",
+        showMenu && "z-50"
       )}
     >
       {/* Header */}
