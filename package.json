@@ -17,6 +17,7 @@
     "build:main": "tsc -p tsconfig.main.json && node esbuild.preload.mjs",
     "copy:shared": "xcopy /E /I /Y dist\\preload\\shared dist\\shared > nul 2>&1 || echo Shared files copied",
     "fix:preload": "node scripts/fix-preload-imports.js",
+    "dist": "npm run build && electron-builder build --win --x64 --publish never",
     "package": "electron-builder build --publish never",
     "package:win": "electron-builder build --win --publish never",
     "package:mac": "electron-builder build --mac --publish never",
@@ -29,25 +30,25 @@
     "format": "prettier --write \"src/**/*.{ts,tsx,json}\""
   },
   "dependencies": {
-    "dugite": "^2.4.1",
-    "zustand": "^4.5.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "lucide-react": "^0.344.0",
-    "clsx": "^2.1.0",
-    "tailwind-merge": "^2.2.1",
-    "class-variance-authority": "^0.7.0",
     "@radix-ui/react-dialog": "^1.0.5",
     "@radix-ui/react-dropdown-menu": "^2.0.6",
     "@radix-ui/react-select": "^2.0.0",
-    "@radix-ui/react-tooltip": "^1.0.7",
-    "@radix-ui/react-tabs": "^1.0.4",
     "@radix-ui/react-slot": "^1.0.2",
-    "cmdk": "^0.2.1",
-    "react-window": "^1.8.10",
+    "@radix-ui/react-tabs": "^1.0.4",
+    "@radix-ui/react-tooltip": "^1.0.7",
     "chokidar": "^3.6.0",
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.1.0",
+    "cmdk": "^0.2.1",
+    "date-fns": "^3.3.1",
+    "dugite": "^2.4.1",
     "electron-store": "^8.1.0",
-    "date-fns": "^3.3.1"
+    "lucide-react": "^0.344.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-window": "^1.8.10",
+    "tailwind-merge": "^2.2.1",
+    "zustand": "^4.5.0"
   },
   "devDependencies": {
     "@types/node": "^20.11.16",
@@ -60,7 +61,7 @@
     "autoprefixer": "^10.4.17",
     "concurrently": "^8.2.2",
     "electron": "^28.2.1",
-    "electron-builder": "^24.9.1",
+    "electron-builder": "^24.13.3",
     "eslint": "^8.56.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-react": "^7.33.2",
@@ -84,16 +85,29 @@
       "package.json"
     ],
     "win": {
-      "target": ["nsis"],
-      "icon": "build/icon.ico"
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64"]
+        }
+      ],
+      "icon": "build/icon.ico",
+      "sign": null,
+      "signAndEditExecutable": false,
+      "signDlls": false
     },
     "mac": {
-      "target": ["dmg"],
+      "target": [
+        "dmg"
+      ],
       "icon": "build/icon.icns",
       "category": "public.app-category.developer-tools"
     },
     "linux": {
-      "target": ["AppImage", "deb"],
+      "target": [
+        "AppImage",
+        "deb"
+      ],
       "icon": "build/icon.png",
       "category": "Development"
     }
