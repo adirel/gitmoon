@@ -89,7 +89,7 @@ export const Sidebar: React.FC = () => {
               "w-5 h-5 transition-colors",
               activeView === item.id ? "text-accent" : "text-muted group-hover:text-accent"
             )} />
-            <span className="absolute left-full ml-2 px-2 py-1 bg-surface-elevated rounded text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+            <span className="absolute left-full ml-2 px-2 py-1 bg-surface-elevated border border-border rounded text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
               {item.label}
             </span>
           </button>
@@ -100,10 +100,20 @@ export const Sidebar: React.FC = () => {
       {!selectedRepo && (
         <div className="border-t border-border">
           <button
-            className="w-full h-14 flex items-center justify-center hover:bg-surface-elevated transition-colors group"
+            onClick={() => setActiveView('settings')}
+            className={cn(
+              "w-full h-14 flex items-center justify-center hover:bg-surface-elevated transition-colors group relative",
+              activeView === 'settings' && "bg-surface-elevated border-l-2 border-accent"
+            )}
             title="Settings"
           >
-            <Settings className="w-5 h-5 text-muted group-hover:text-accent transition-colors" />
+            <Settings className={cn(
+              "w-5 h-5 transition-colors",
+              activeView === 'settings' ? "text-accent" : "text-muted group-hover:text-accent"
+            )} />
+            <span className="absolute left-full ml-2 px-2 py-1 bg-surface-elevated border border-border rounded text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
+              Settings
+            </span>
           </button>
         </div>
       )}

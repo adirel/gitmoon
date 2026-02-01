@@ -118,7 +118,7 @@ export const RepositoryCard: React.FC<RepositoryCardProps> = ({ repository }) =>
           </div>
         </div>
         
-        <div className="flex items-center space-x-2" ref={menuRef}>
+        <div className="flex items-center space-x-2 relative z-20" ref={menuRef}>
           {repository.isFavorite && (
             <Star className="w-4 h-4 text-warning fill-warning" />
           )}
@@ -127,7 +127,7 @@ export const RepositoryCard: React.FC<RepositoryCardProps> = ({ repository }) =>
               e.stopPropagation();
               setShowMenu(!showMenu);
             }}
-            className="p-1 hover:bg-surface-elevated rounded transition-colors relative"
+            className="p-1 hover:bg-surface-elevated rounded transition-colors"
           >
             <MoreVertical className="w-4 h-4 text-muted" />
           </button>

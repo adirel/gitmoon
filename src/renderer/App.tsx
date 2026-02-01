@@ -5,9 +5,11 @@ import { useRepositoryStore } from './stores/repository';
 import { Sidebar } from './components/Sidebar';
 import { RepositoryManagement } from './views/RepositoryManagement';
 import { RepositoryWorkspace } from './views/RepositoryWorkspace';
+import { Settings } from './views/Settings';
 
 export const App: React.FC = () => {
   const selectedRepo = useRepositoryStore((state) => state.selectedRepo);
+  const activeView = useAppStore((state) => state.activeView);
   const setConnectionStatus = useAppStore((state) => state.setConnectionStatus);
 
   React.useEffect(() => {
@@ -49,7 +51,13 @@ export const App: React.FC = () => {
     <div className="flex h-screen w-screen overflow-hidden bg-background text-text-primary">
       <Sidebar />
       <main className="flex-1 overflow-hidden">
-        {selectedRepo ? <RepositoryWorkspace /> : <RepositoryManagement />}
+        {activeView === 'settings' ? (
+          <Settings />
+        ) : selectedRepo ? (
+          <RepositoryWorkspace />
+        ) : (
+          <RepositoryManagement />
+        )}
       </main>
     </div>
   );
