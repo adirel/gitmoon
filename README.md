@@ -1,8 +1,9 @@
 # GitMoon 🌙
-![title](https://img.shields.io/badge/build-passing-brightgreen?style=for-the-badge)
+![title](https://img.shields.io/badge/build-passing-brightgreen?style=for-the-badge)  ![title](https://img.shields.io/badge/Coffee-drinkin-brightgreen?style=for-the-badge)
 
 ![title](https://img.shields.io/badge/under%20work-8A2BE2)
 ![title](https://img.shields.io/badge/github-repo-blue?logo=github)
+<img src="https://img.shields.io/github/forks/adirel/gitmoon?style=flat-square&logo=github&color=181717" alt="GitHub forks">
 
 A desktop Git client that works offline and looks good doing it. combine automation scripts for friendly day to day operations
 
