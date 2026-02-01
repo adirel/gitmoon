@@ -1,4 +1,8 @@
 # GitMoon 🌙
+![title](https://img.shields.io/badge/build-passing-brightgreen?style=for-the-badge)
+
+![title](https://img.shields.io/badge/under%20work-8A2BE2)
+![title](https://img.shields.io/badge/github-repo-blue?logo=github)
 
 A desktop Git client that works offline and looks good doing it. combine automation scripts for friendly day to day operations
 
